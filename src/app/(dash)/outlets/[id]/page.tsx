@@ -5,8 +5,8 @@ import { getDb, requireOwner } from "@/lib/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { Card, Empty, PageHeader, Pill } from "@/components/ui";
 import { ActionButton, ActionForm, Submit } from "@/components/forms";
-import { addOperator, removeOperator, updateOutlet } from "../../actions";
-import { OutletFields } from "@/components/OutletFields";
+import { addOperator, removeOperator } from "../../actions";
+import { EditOutletModal } from "@/components/EditOutletModal";
 
 export default async function OutletDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireOwner();
@@ -23,7 +23,10 @@ export default async function OutletDetail({ params }: { params: Promise<{ id: s
     <>
       <Link href="/outlets" className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900"><ArrowLeft size={14} /> Outlets</Link>
       <PageHeader title={o.name} subtitle={`Licence ${o.licence_no}${o.etc_id ? ` · ETC ${o.etc_id}` : ""}`}
-        actions={<Link href={`/upload?outlet=${o.id}`} className="btn-primary">Upload for this outlet</Link>} />
+        actions={<>
+          <EditOutletModal outlet={o} />
+          <Link href={`/upload?outlet=${o.id}`} className="btn-primary">Upload for this outlet</Link>
+        </>} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -74,11 +77,14 @@ export default async function OutletDetail({ params }: { params: Promise<{ id: s
           </Card>
         </div>
 
-        <Card title="Details">
-          <ActionForm action={updateOutlet.bind(null, o.id)} className="space-y-3">
-            <OutletFields o={o} />
-            <Submit>Save changes</Submit>
-          </ActionForm>
+        <Card title="Details" action={<EditOutletModal outlet={o} className="btn-ghost btn-sm" />}>
+          <dl className="space-y-3 text-sm">
+            <div><dt className="text-xs text-zinc-500">Outlet name</dt><dd className="mt-0.5">{o.name}</dd></div>
+            <div><dt className="text-xs text-zinc-500">Licence no.</dt><dd className="mt-0.5">{o.licence_no}</dd></div>
+            <div><dt className="text-xs text-zinc-500">ETC ID</dt><dd className="mt-0.5">{o.etc_id || "—"}</dd></div>
+            <div><dt className="text-xs text-zinc-500">Phone</dt><dd className="mt-0.5">{o.phone || "—"}</dd></div>
+            <div><dt className="text-xs text-zinc-500">Address</dt><dd className="mt-0.5">{o.address || "—"}</dd></div>
+          </dl>
         </Card>
       </div>
     </>

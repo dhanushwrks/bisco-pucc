@@ -17,15 +17,20 @@ export function Feedback({ state }: { state: ActionState }) {
 }
 
 /** Generic form bound to a server action; resets on success when resetOnSuccess. */
-export function ActionForm({ action, children, className = "", resetOnSuccess = false }: {
+export function ActionForm({ action, children, className = "", resetOnSuccess = false, onSuccess }: {
   action: (s: ActionState, f: FormData) => Promise<ActionState>;
   children: React.ReactNode;
   className?: string;
   resetOnSuccess?: boolean;
+  onSuccess?: () => void;
 }) {
   const [state, formAction] = useActionState(action, null);
   const ref = useRef<HTMLFormElement>(null);
-  useEffect(() => { if (state?.ok && resetOnSuccess) ref.current?.reset(); }, [state, resetOnSuccess]);
+  useEffect(() => {
+    if (!state?.ok) return;
+    if (resetOnSuccess) ref.current?.reset();
+    onSuccess?.();
+  }, [state, resetOnSuccess, onSuccess]);
   return (
     <form ref={ref} action={formAction} className={className}>
       {children}

@@ -3,9 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { getDb, requireOwner } from "@/lib/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { Card, Empty, Notice, PageHeader, Pill } from "@/components/ui";
-import { ActionForm, Submit } from "@/components/forms";
-import { createOutlet } from "../actions";
-import { OutletFields } from "@/components/OutletFields";
+import { AddOutletModal } from "@/components/AddOutletModal";
 
 export default async function Outlets({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   await requireOwner();
@@ -23,14 +21,14 @@ export default async function Outlets({ searchParams }: { searchParams: Promise<
 
   return (
     <>
-      <PageHeader title="Outlets" subtitle="Each outlet uploads its certificate export daily." />
+      <PageHeader title="Outlets" subtitle="Each outlet uploads its certificate export daily." actions={<AddOutletModal />} />
       {welcome && !outlets?.length && (
         <div className="mb-6"><Notice tone="green">Welcome! Add your first outlet — the licence number must match the LICENCE_NO column in its export.</Notice></div>
       )}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2" pad={false} title={`${outlets?.length ?? 0} outlets`}>
+      <Card pad={false} title={`${outlets?.length ?? 0} outlets`}>
           {!outlets?.length ? (
-            <Empty title="No outlets yet" hint="Use the form to add one." />
+            <Empty title="No outlets yet" hint="Use the “Add outlet” button to create one."
+              action={<AddOutletModal />} />
           ) : (
             <ul className="divide-y divide-zinc-100">
               {outlets.map((o) => {
@@ -63,15 +61,7 @@ export default async function Outlets({ searchParams }: { searchParams: Promise<
               })}
             </ul>
           )}
-        </Card>
-
-        <Card title="Add outlet">
-          <ActionForm action={createOutlet} resetOnSuccess className="space-y-3">
-            <OutletFields />
-            <Submit>Add outlet</Submit>
-          </ActionForm>
-        </Card>
-      </div>
+      </Card>
     </>
   );
 }
