@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+}
+
+body {
+  background: #fafafa;
+  color: #18181b;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+@layer components {
+.btn, .btn-primary, .btn-accent, .btn-ghost, .btn-outline { @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3.5 h-9 text-sm font-medium transition disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap; }
+.btn-primary { @apply bg-zinc-900 text-white hover:bg-zinc-700; }
+.btn-accent { @apply bg-brand-600 text-white hover:bg-brand-700; }
+.btn-ghost { @apply text-zinc-700 hover:bg-zinc-100; }
+.btn-outline { @apply border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50; }
+.btn-sm { @apply h-8 px-2.5 text-xs; }
+
+.input { @apply w-full h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-4 focus:ring-zinc-100; }
+.label { @apply block text-xs font-medium text-zinc-600 mb-1.5; }
+
+.card { @apply rounded-xl border border-zinc-200/80 bg-white; }
+
+.table { @apply w-full text-sm; }
+.table th { @apply text-left text-[11px] font-medium uppercase tracking-wide text-zinc-500 px-4 py-2.5 border-b border-zinc-100 bg-zinc-50/60; }
+.table td { @apply px-4 py-3 border-b border-zinc-100 align-middle; }
+.table tr:last-child td { @apply border-b-0; }
+}
