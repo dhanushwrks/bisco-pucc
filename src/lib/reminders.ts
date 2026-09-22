@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTemplate } from "@/lib/whatsapp";
 import { fmtDate, fmtPlate } from "@/lib/format";
 
-type Org = { id: string; name: string; wa_template: string; wa_language: string };
+type Org = { id: string; name: string; wa_template: string; wa_language: string; support_phone: string | null };
 type Planned = {
   vehicle_no: string; mobile: string; valid_until: string; stage: number;
   days_left: number; outlet_name: string | null; outlet_phone: string | null;
@@ -15,13 +15,13 @@ const params = (org: Org, v: { vehicle_no: string; valid_until: string; outlet_n
   fmtPlate(v.vehicle_no),
   fmtDate(v.valid_until),
   v.outlet_name ?? org.name,
-  v.outlet_phone ?? "-",
+  v.outlet_phone ?? org.support_phone ?? "-",
 ];
 
 /** Runs the automatic reminder job for one org, or all orgs when orgId is omitted. */
 export async function runReminders(orgId?: string, triggeredBy?: string): Promise<RunSummary> {
   const db = createAdminClient();
-  let q = db.from("orgs").select("id, name, wa_template, wa_language").eq("reminders_enabled", true);
+  let q = db.from("orgs").select("id, name, wa_template, wa_language, support_phone").eq("reminders_enabled", true);
   if (orgId) q = q.eq("id", orgId);
   const { data: orgs, error } = await q;
   if (error) throw error;
@@ -66,7 +66,7 @@ export async function runReminders(orgId?: string, triggeredBy?: string): Promis
 export async function sendManualReminder(orgId: string, vehicleNo: string, userId: string) {
   const db = createAdminClient();
   const [{ data: org }, { data: v }] = await Promise.all([
-    db.from("orgs").select("id, name, wa_template, wa_language").eq("id", orgId).single(),
+    db.from("orgs").select("id, name, wa_template, wa_language, support_phone").eq("id", orgId).single(),
     db.from("vehicles")
       .select("vehicle_no, mobile, valid_until, opted_out, outlets(name, phone)")
       .eq("org_id", orgId).eq("vehicle_no", vehicleNo).single(),

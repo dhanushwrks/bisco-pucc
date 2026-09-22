@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Car, LayoutGrid, LogOut, MessageCircle, Store, Upload } from "lucide-react";
+import { Car, LayoutGrid, LogOut, MessageCircle, Settings, Store, Upload } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 const NAV = [
@@ -11,6 +11,7 @@ const NAV = [
   { href: "/vehicles", label: "Vehicles", icon: Car, owner: false },
   { href: "/outlets", label: "Outlets", icon: Store, owner: true },
   { href: "/reminders", label: "Reminders", icon: MessageCircle, owner: true },
+  { href: "/settings", label: "Settings", icon: Settings, owner: true },
 ];
 
 export function Sidebar({ orgName, email, role, outletName, signOut }: {

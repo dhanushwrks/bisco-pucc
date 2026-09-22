@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDb, getSession, requireOwner } from "@/lib/session";
 import { runReminders, sendManualReminder } from "@/lib/reminders";
-import { normalizePlate } from "@/lib/parse";
+import { normalizeMobile, normalizePlate } from "@/lib/parse";
 
 export type ActionState = { ok?: boolean; error?: string; message?: string } | null;
 
@@ -120,7 +120,23 @@ export async function saveReminderSettings(_: ActionState, f: FormData): Promise
   }).eq("id", me.orgId);
   if (error) return { error: error.message };
   revalidatePath("/reminders");
-  return { ok: true, message: "Settings saved" };
+  revalidatePath("/settings");
+  return { ok: true, message: "Reminder settings saved" };
+}
+
+export async function saveBusinessSettings(_: ActionState, f: FormData): Promise<ActionState> {
+  const me = await requireOwner();
+  const name = s(f, "name");
+  if (!name) return { error: "Business name is required" };
+  const rawPhone = s(f, "support_phone");
+  const support_phone = rawPhone ? normalizeMobile(rawPhone) : null;
+  if (rawPhone && !support_phone) return { error: "Enter a valid 10-digit Indian mobile number" };
+  const supabase = await getDb();
+  const { error } = await supabase.from("orgs").update({ name, support_phone }).eq("id", me.orgId);
+  if (error) return { error: error.message };
+  revalidatePath("/settings");
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Business details saved" };
 }
 
 export async function goToVehicle(f: FormData) {

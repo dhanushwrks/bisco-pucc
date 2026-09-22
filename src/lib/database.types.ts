@@ -1,4 +1,4 @@
-// Mirrors supabase/migrations/0001_init.sql.
+// Mirrors supabase/migrations/0001_init.sql + 0002_org_settings.sql.
 // Regenerate with: npx supabase gen types typescript --project-id <ref> > src/lib/database.types.ts
 
 type Role = "owner" | "operator";
@@ -8,7 +8,7 @@ type Table<Row, Insert, Rel = []> = { Row: Row; Insert: Insert; Update: Partial<
 
 type OrgRow = {
   id: string; name: string; reminder_offsets: number[]; reminders_enabled: boolean;
-  wa_template: string; wa_language: string; created_at: string;
+  wa_template: string; wa_language: string; support_phone: string | null; created_at: string;
 };
 type OutletRow = {
   id: string; org_id: string; name: string; licence_no: string; etc_id: string | null;
@@ -51,7 +51,7 @@ type PlannedReminder = {
 export type Database = {
   public: {
     Tables: {
-      orgs: Table<OrgRow, Opt<OrgRow, "id" | "reminder_offsets" | "reminders_enabled" | "wa_template" | "wa_language" | "created_at">>;
+      orgs: Table<OrgRow, Opt<OrgRow, "id" | "reminder_offsets" | "reminders_enabled" | "wa_template" | "wa_language" | "support_phone" | "created_at">>;
       outlets: Table<OutletRow, Opt<OutletRow, "id" | "etc_id" | "address" | "phone" | "is_active" | "created_at">, [
         { foreignKeyName: "outlets_org_id_fkey"; columns: ["org_id"]; isOneToOne: false; referencedRelation: "orgs"; referencedColumns: ["id"] },
       ]>;
