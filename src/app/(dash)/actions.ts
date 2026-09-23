@@ -78,19 +78,28 @@ export async function removeOperator(outletId: string, userId: string) {
   revalidatePath(`/outlets/${outletId}`);
 }
 
-export async function sendReminderAction(vehicleNo: string): Promise<ActionState> {
+export async function sendReminderAction(vehicleNo: string, _: ActionState, f: FormData): Promise<ActionState> {
   const me = await requireOwner();
-  const res = await sendManualReminder(me.orgId, normalizePlate(vehicleNo), me.userId);
+  const plate = normalizePlate(vehicleNo);
+  const template = s(f, "template");
+  const language = s(f, "language");
+  if (!template) return { error: "Choose a WhatsApp template" };
+  const res = await sendManualReminder(me.orgId, plate, me.userId, { template, language: language || undefined });
   revalidatePath("/vehicles");
+  revalidatePath(`/vehicles/${plate}`);
   revalidatePath("/reminders");
-  return res.ok ? { ok: true, message: res.status === "simulated" ? "Simulated (WhatsApp not configured)" : "Reminder sent" } : { error: res.error };
+  return res.ok
+    ? { ok: true, message: res.status === "simulated" ? "Simulated (WhatsApp not configured)" : "Alert sent" }
+    : { error: res.error };
 }
 
 export async function toggleOptOut(vehicleNo: string, optedOut: boolean) {
   await requireOwner();
+  const plate = normalizePlate(vehicleNo);
   const supabase = await getDb();
-  await supabase.from("vehicles").update({ opted_out: optedOut }).eq("vehicle_no", vehicleNo);
+  await supabase.from("vehicles").update({ opted_out: optedOut }).eq("vehicle_no", plate);
   revalidatePath("/vehicles");
+  revalidatePath(`/vehicles/${plate}`);
 }
 
 export async function runRemindersNow(): Promise<ActionState> {

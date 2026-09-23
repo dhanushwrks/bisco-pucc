@@ -2,10 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getDb, getSession } from "@/lib/session";
 import { addDays, fmtDate, fmtPlate, todayIST, validity } from "@/lib/format";
-import { Card, Empty, PageHeader, Pill, Stat, ValidityPill } from "@/components/ui";
-import { RevenueChart } from "@/components/charts/RevenueChart";
-import { CategoryBreakdown } from "@/components/charts/CategoryBreakdown";
-import { FuelBreakdown } from "@/components/charts/FuelBreakdown";
+import { Card, Empty, PageHeader, Stat, ValidityPill } from "@/components/ui";
 
 type Summary = { total: number; active: number; expiring_7: number; expiring_30: number; expired: number; no_mobile: number; opted_out: number };
 
@@ -54,44 +51,6 @@ export default async function Overview() {
         <Stat label="Expiring in 7 days" value={s.expiring_7 ?? 0} tone="amber" hint="Highest-intent renewals" />
         <Stat label="Expiring in 30 days" value={s.expiring_30 ?? 0} tone="amber" hint="In the reminder window" />
         <Stat label="Expired" value={s.expired ?? 0} tone="red" hint={`${s.no_mobile ?? 0} without a mobile`} />
-      </div>
-
-      <div className="mt-6">
-        <Card
-          title={
-            <span className="flex items-center gap-2">
-              Revenue
-              <Pill tone="zinc">Demo</Pill>
-            </span>
-          }
-          action={<span className="text-xs text-zinc-400">Sample figures for showcase</span>}
-        >
-          <RevenueChart />
-        </Card>
-      </div>
-
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <Card
-          title={
-            <span className="flex items-center gap-2">
-              By category
-              <Pill tone="zinc">Demo</Pill>
-            </span>
-          }
-        >
-          <CategoryBreakdown />
-        </Card>
-
-        <Card
-          title={
-            <span className="flex items-center gap-2">
-              By fuel
-              <Pill tone="zinc">Demo</Pill>
-            </span>
-          }
-        >
-          <FuelBreakdown />
-        </Card>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">

@@ -63,7 +63,12 @@ export async function runReminders(orgId?: string, triggeredBy?: string): Promis
 }
 
 /** Sends one manual reminder for a vehicle (throttled to once per 24h). */
-export async function sendManualReminder(orgId: string, vehicleNo: string, userId: string) {
+export async function sendManualReminder(
+  orgId: string,
+  vehicleNo: string,
+  userId: string,
+  opts?: { template?: string; language?: string },
+) {
   const db = createAdminClient();
   const [{ data: org }, { data: v }] = await Promise.all([
     db.from("orgs").select("id, name, wa_template, wa_language, support_phone").eq("id", orgId).single(),
@@ -88,7 +93,12 @@ export async function sendManualReminder(orgId: string, vehicleNo: string, userI
   if (error) return { ok: false, error: error.message };
 
   const outlet = (Array.isArray(v.outlets) ? v.outlets[0] : v.outlets) as { name: string; phone: string | null } | null;
-  const status = await deliver(org as Org, row.id, {
+  const sendOrg: Org = {
+    ...(org as Org),
+    wa_template: opts?.template?.trim() || (org as Org).wa_template,
+    wa_language: opts?.language?.trim() || (org as Org).wa_language,
+  };
+  const status = await deliver(sendOrg, row.id, {
     vehicle_no: v.vehicle_no, mobile: v.mobile, valid_until: v.valid_until,
     outlet_name: outlet?.name ?? null, outlet_phone: outlet?.phone ?? null,
   });
