@@ -11,7 +11,7 @@ const NAV = [
   { href: "/vehicles", label: "Vehicles", icon: Car, owner: false },
   { href: "/outlets", label: "Outlets", icon: Store, owner: true },
   { href: "/reminders", label: "Reminders", icon: MessageCircle, owner: true },
-  { href: "/settings", label: "Settings", icon: Settings, owner: true },
+  { href: "/settings", label: "Settings", icon: Settings, owner: false },
 ];
 
 export function Sidebar({ orgName, email, role, outletName, signOut }: {

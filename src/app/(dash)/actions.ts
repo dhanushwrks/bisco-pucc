@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createSsrClient } from "@/lib/supabase/server";
 import { getDb, getSession, requireOwner } from "@/lib/session";
 import { runReminders, sendManualReminder } from "@/lib/reminders";
 import { normalizeMobile, normalizePlate } from "@/lib/parse";
@@ -137,6 +138,28 @@ export async function saveBusinessSettings(_: ActionState, f: FormData): Promise
   revalidatePath("/settings");
   revalidatePath("/", "layout");
   return { ok: true, message: "Business details saved" };
+}
+
+/** Any signed-in user (owner or operator) can change their own password. */
+export async function changePassword(_: ActionState, f: FormData): Promise<ActionState> {
+  const me = await getSession();
+  const current = String(f.get("current_password") ?? "");
+  const next = String(f.get("new_password") ?? "");
+  const confirm = String(f.get("confirm_password") ?? "");
+  if (next.length < 8) return { error: "New password must be at least 8 characters." };
+  if (next !== confirm) return { error: "New passwords do not match." };
+  if (current === next) return { error: "New password must be different from the current one." };
+
+  const supabase = await createSsrClient();
+  const { error: authErr } = await supabase.auth.signInWithPassword({
+    email: me.email,
+    password: current,
+  });
+  if (authErr) return { error: "Current password is incorrect." };
+
+  const { error } = await supabase.auth.updateUser({ password: next });
+  if (error) return { error: error.message };
+  return { ok: true, message: "Password updated" };
 }
 
 export async function goToVehicle(f: FormData) {
