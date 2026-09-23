@@ -170,7 +170,7 @@ export function UploadForm({ outlets, fixed, initialOutlet }: { outlets: Outlet[
               <Row label="New vehicles" value={s.new_vehicles} accent />
               <Row label="Renewals (updated)" value={s.renewed} />
               <Row label="Older history only" value={s.history_only} muted />
-              <Row label="Already imported" value={s.already_imported} muted />
+              <Row label="Already imported (same PUCC or vehicle+date)" value={s.already_imported} muted />
               <Row label="Rejected rows" value={s.rejected} danger={s.rejected > 0} />
             </dl>
             {result.warningCount > 0 && (

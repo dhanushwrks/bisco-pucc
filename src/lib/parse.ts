@@ -108,6 +108,7 @@ export function parseCertificates(
   const rejected: RowIssue[] = [];
   const warnings: RowIssue[] = [];
   const seenPucc = new Set<string>();
+  const seenVehicleTest = new Set<string>();
   const licences = new Set<string>();
   const wantLicence = opts.outletLicence ? normalizeLicence(opts.outletLicence) : null;
   let min: string | null = null;
@@ -138,7 +139,11 @@ export function parseCertificates(
     if (opts.period && (test < opts.period.from || test > opts.period.to))
       return reject(`Test date ${test} is outside the selected period`);
     if (seenPucc.has(pucc)) return reject(`Duplicate PUCC number ${pucc} in file`);
+    const vehicleTest = `${vehicle}|${test}`;
+    if (seenVehicleTest.has(vehicleTest))
+      return reject(`Duplicate vehicle ${vehicle} on test date ${test} in file`);
     seenPucc.add(pucc);
+    seenVehicleTest.add(vehicleTest);
 
     const mobile = normalizeMobile(r.MOBILENO);
     if (!mobile) warnings.push({ row: rowNo, vehicle, reason: "No valid mobile — WhatsApp reminders disabled" });

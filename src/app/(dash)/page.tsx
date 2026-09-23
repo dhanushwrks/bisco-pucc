@@ -13,11 +13,11 @@ export default async function Overview() {
   const start = addDays(today, -13);
   const days = Array.from({ length: 14 }, (_, i) => addDays(start, i));
 
-  const [{ data: summary }, { data: outlets }, { data: uploads }, { data: expiring }, reminders, { data: due }] =
+  const [{ data: summary }, { data: outlets }, { data: tests }, { data: expiring }, reminders, { data: due }] =
     await Promise.all([
       db.rpc("dashboard_summary"),
       db.from("outlets").select("id, name").eq("is_active", true).order("name"),
-      db.from("uploads").select("outlet_id, period_from, period_to, created_at").gte("period_to", start),
+      db.from("certificates").select("outlet_id, test_date").gte("test_date", start).lte("test_date", today),
       db.from("vehicles").select("vehicle_no, model, valid_until, outlets(name)")
         .gte("valid_until", today).lte("valid_until", addDays(today, 7))
         .order("valid_until").limit(8),
@@ -29,10 +29,10 @@ export default async function Overview() {
 
   const s = (summary ?? {}) as Summary;
   const covered = new Map<string, Set<string>>();
-  for (const u of uploads ?? []) {
-    const set = covered.get(u.outlet_id) ?? new Set<string>();
-    for (let d = u.period_from; d <= u.period_to; d = addDays(d, 1)) set.add(d);
-    covered.set(u.outlet_id, set);
+  for (const c of tests ?? []) {
+    const set = covered.get(c.outlet_id) ?? new Set<string>();
+    set.add(c.test_date);
+    covered.set(c.outlet_id, set);
   }
   const rs = (reminders.data ?? []) as { status: string }[];
   const count = (...st: string[]) => rs.filter((r) => st.includes(r.status)).length;
@@ -54,7 +54,7 @@ export default async function Overview() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3" title="Upload coverage · last 14 days"
+        <Card className="lg:col-span-3" title="Test coverage · last 14 days"
           action={<span className="text-xs text-zinc-400">{fmtDate(start)} – {fmtDate(today)}</span>}>
           {!outlets?.length ? (
             <Empty title="No outlets yet" hint="Add your first outlet to start uploading."
@@ -74,7 +74,7 @@ export default async function Overview() {
                     </div>
                     <div className="flex gap-0.5 sm:gap-1">
                       {days.map((d) => (
-                        <div key={d} title={`${fmtDate(d)} · ${set.has(d) ? "uploaded" : "missing"}`}
+                        <div key={d} title={`${fmtDate(d)} · ${set.has(d) ? "tested" : "no tests"}`}
                           className={`h-5 flex-1 rounded-sm sm:h-6 sm:rounded ${set.has(d) ? "bg-brand-500" : d === today ? "border border-dashed border-zinc-300 bg-white" : "bg-zinc-100"}`} />
                       ))}
                     </div>
