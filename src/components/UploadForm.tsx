@@ -82,9 +82,9 @@ export function UploadForm({ outlets, fixed, initialOutlet }: { outlets: Outlet[
           <p className="mt-1 text-sm text-zinc-500">
             {s.new_vehicles} new vehicles · {s.renewed} renewals · {s.already_imported} already imported · {s.rejected} rejected
           </p>
-          <div className="mt-6 flex gap-2">
-            <button className="btn-primary" onClick={reset}>Upload another file</button>
-            <Link className="btn-outline" href="/vehicles">View vehicles</Link>
+          <div className="mt-6 flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <button className="btn-primary w-full sm:w-auto" onClick={reset}>Upload another file</button>
+            <Link className="btn-outline w-full sm:w-auto" href="/vehicles">View vehicles</Link>
           </div>
         </div>
       </Card>
@@ -135,7 +135,7 @@ export function UploadForm({ outlets, fixed, initialOutlet }: { outlets: Outlet[
                 <div className="truncate text-sm font-medium">{file.name}</div>
                 <div className="text-xs text-zinc-500">{(file.size / 1024).toFixed(1)} KB{busy === "preview" ? " · checking…" : ""}</div>
               </div>
-              <button className="btn-ghost btn-sm" onClick={reset} aria-label="Remove file"><X size={14} /></button>
+              <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100" onClick={reset} aria-label="Remove file"><X size={16} /></button>
             </div>
           )}
           <input ref={input} type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
@@ -148,10 +148,12 @@ export function UploadForm({ outlets, fixed, initialOutlet }: { outlets: Outlet[
           <Card pad={false} title={`${s?.rejected ?? result.rejected.length} rows will be skipped`}>
             <ul className="max-h-72 divide-y divide-zinc-100 overflow-auto text-sm">
               {result.rejected.map((r, i) => (
-                <li key={i} className="flex gap-4 px-5 py-2.5">
-                  <span className="w-14 shrink-0 text-xs text-zinc-400 tabular">Row {r.row}</span>
-                  <span className="w-28 shrink-0 font-mono text-xs">{r.vehicle ?? "—"}</span>
-                  <span className="text-zinc-600">{r.reason}</span>
+                <li key={i} className="flex flex-col gap-1 px-4 py-2.5 sm:flex-row sm:gap-4 sm:px-5">
+                  <div className="flex gap-3 sm:contents">
+                    <span className="w-14 shrink-0 text-xs text-zinc-400 tabular">Row {r.row}</span>
+                    <span className="min-w-0 font-mono text-xs sm:w-28 sm:shrink-0">{r.vehicle ?? "—"}</span>
+                  </div>
+                  <span className="min-w-0 break-words text-zinc-600">{r.reason}</span>
                 </li>
               ))}
             </ul>

@@ -3,12 +3,12 @@ import type { Validity } from "@/lib/format";
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight text-zinc-900">{title}</h1>
+    <div className="mb-5 flex flex-col gap-3 sm:mb-7 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-900 sm:text-[22px]">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-zinc-500">{subtitle}</p>}
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
   );
 }
@@ -19,12 +19,12 @@ export function Card({ title, action, children, className = "", pad = true }: {
   return (
     <section className={`card ${className}`}>
       {title && (
-        <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-3.5">
-          <h2 className="text-sm font-medium text-zinc-900">{title}</h2>
-          {action}
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 px-4 py-3 sm:px-5 sm:py-3.5">
+          <h2 className="min-w-0 text-sm font-medium text-zinc-900">{title}</h2>
+          {action && <div className="shrink-0">{action}</div>}
         </header>
       )}
-      <div className={pad ? "p-5" : ""}>{children}</div>
+      <div className={pad ? "p-4 sm:p-5" : ""}>{children}</div>
     </section>
   );
 }
@@ -34,12 +34,12 @@ export function Stat({ label, value, hint, tone = "default" }: {
 }) {
   const dot = { default: "bg-zinc-300", amber: "bg-amber-400", red: "bg-rose-500", green: "bg-brand-500" }[tone];
   return (
-    <div className="card px-5 py-4">
-      <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
-        <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
-        {label}
+    <div className="card px-4 py-3.5 sm:px-5 sm:py-4">
+      <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-500 sm:text-xs">
+        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+        <span className="leading-snug">{label}</span>
       </div>
-      <div className="mt-2 text-[28px] font-semibold leading-none tracking-tight text-zinc-900 tabular">{value}</div>
+      <div className="mt-2 text-2xl font-semibold leading-none tracking-tight text-zinc-900 tabular sm:text-[28px]">{value}</div>
       {hint && <div className="mt-2 text-xs text-zinc-500">{hint}</div>}
     </div>
   );
@@ -64,8 +64,8 @@ export function Pill({ tone = "zinc", children }: { tone?: Tone; children: React
 
 export function ValidityPill({ state, days }: { state: Validity; days: number | null }) {
   if (state === "unknown" || days === null) return <Pill>Unknown</Pill>;
-  if (state === "expired") return <Pill tone="red">Expired {Math.abs(days)}d ago</Pill>;
-  if (state === "expiring") return <Pill tone="amber">{days === 0 ? "Expires today" : `${days}d left`}</Pill>;
+  if (state === "expired") return <Pill tone="red"><span className="sm:hidden">Exp. {Math.abs(days)}d</span><span className="hidden sm:inline">Expired {Math.abs(days)}d ago</span></Pill>;
+  if (state === "expiring") return <Pill tone="amber">{days === 0 ? "Today" : <><span className="sm:hidden">{days}d</span><span className="hidden sm:inline">{days}d left</span></>}</Pill>;
   return <Pill tone="green">Valid</Pill>;
 }
 

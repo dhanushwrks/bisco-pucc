@@ -29,6 +29,14 @@ export const DEMO_CATEGORIES: CategoryCount[] = [
   { key: "commercial", label: "Commercial / HCV", count: 490, avgFee: 250 },
 ];
 
+/** Fuel mix — petrol-heavy two-wheelers dominate most centres. */
+export const DEMO_FUELS: CategoryCount[] = [
+  { key: "petrol", label: "Petrol", count: 9_420, avgFee: 90 },
+  { key: "diesel", label: "Diesel", count: 1_860, avgFee: 180 },
+  { key: "cng", label: "CNG / LPG", count: 310, avgFee: 120 },
+  { key: "ev", label: "Electric", count: 90, avgFee: 80 },
+];
+
 export function formatInr(n: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",

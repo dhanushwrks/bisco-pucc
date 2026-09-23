@@ -5,6 +5,7 @@ import { addDays, fmtDate, fmtPlate, todayIST, validity } from "@/lib/format";
 import { Card, Empty, PageHeader, Pill, Stat, ValidityPill } from "@/components/ui";
 import { RevenueChart } from "@/components/charts/RevenueChart";
 import { CategoryBreakdown } from "@/components/charts/CategoryBreakdown";
+import { FuelBreakdown } from "@/components/charts/FuelBreakdown";
 
 type Summary = { total: number; active: number; expiring_7: number; expiring_30: number; expired: number; no_mobile: number; opted_out: number };
 
@@ -55,9 +56,8 @@ export default async function Overview() {
         <Stat label="Expired" value={s.expired ?? 0} tone="red" hint={`${s.no_mobile ?? 0} without a mobile`} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-5">
+      <div className="mt-6">
         <Card
-          className="lg:col-span-3"
           title={
             <span className="flex items-center gap-2">
               Revenue
@@ -68,9 +68,10 @@ export default async function Overview() {
         >
           <RevenueChart />
         </Card>
+      </div>
 
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
         <Card
-          className="lg:col-span-2"
           title={
             <span className="flex items-center gap-2">
               By category
@@ -79,6 +80,17 @@ export default async function Overview() {
           }
         >
           <CategoryBreakdown />
+        </Card>
+
+        <Card
+          title={
+            <span className="flex items-center gap-2">
+              By fuel
+              <Pill tone="zinc">Demo</Pill>
+            </span>
+          }
+        >
+          <FuelBreakdown />
         </Card>
       </div>
 
@@ -89,21 +101,23 @@ export default async function Overview() {
             <Empty title="No outlets yet" hint="Add your first outlet to start uploading."
               action={me.role === "owner" && <Link href="/outlets" className="btn-outline">Add outlet</Link>} />
           ) : (
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {outlets.map((o) => {
                 const set = covered.get(o.id) ?? new Set();
                 const missing = days.filter((d) => !set.has(d)).length;
                 return (
-                  <div key={o.id} className="flex items-center gap-4">
-                    <div className="w-24 shrink-0 truncate text-sm text-zinc-700 sm:w-36">{o.name}</div>
-                    <div className="flex flex-1 gap-1">
+                  <div key={o.id} className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 truncate text-sm font-medium text-zinc-800">{o.name}</div>
+                      <div className={`shrink-0 text-xs tabular ${missing > 1 ? "text-amber-600" : "text-zinc-400"}`}>
+                        {missing ? `${missing} missing` : "complete"}
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 sm:gap-1">
                       {days.map((d) => (
                         <div key={d} title={`${fmtDate(d)} · ${set.has(d) ? "uploaded" : "missing"}`}
-                          className={`h-6 flex-1 rounded ${set.has(d) ? "bg-brand-500" : d === today ? "border border-dashed border-zinc-300 bg-white" : "bg-zinc-100"}`} />
+                          className={`h-5 flex-1 rounded-sm sm:h-6 sm:rounded ${set.has(d) ? "bg-brand-500" : d === today ? "border border-dashed border-zinc-300 bg-white" : "bg-zinc-100"}`} />
                       ))}
-                    </div>
-                    <div className={`w-16 shrink-0 text-right text-xs tabular ${missing > 1 ? "text-amber-600" : "text-zinc-400"}`}>
-                      {missing ? `${missing} missing` : "complete"}
                     </div>
                   </div>
                 );
@@ -143,23 +157,25 @@ export default async function Overview() {
         {!expiring?.length ? (
           <Empty title="Nothing expiring in the next 7 days" />
         ) : (
-          <table className="table">
-            <thead><tr><th>Vehicle</th><th className="hidden sm:table-cell">Model</th><th className="hidden sm:table-cell">Outlet</th><th>Valid till</th><th /></tr></thead>
-            <tbody>
-              {expiring.map((v) => {
-                const o = (Array.isArray(v.outlets) ? v.outlets[0] : v.outlets) as { name: string } | null;
-                return (
-                  <tr key={v.vehicle_no}>
-                    <td className="whitespace-nowrap font-mono text-[13px] font-medium">{fmtPlate(v.vehicle_no)}</td>
-                    <td className="hidden text-zinc-600 sm:table-cell">{v.model ?? "—"}</td>
-                    <td className="hidden text-zinc-600 sm:table-cell">{o?.name ?? "—"}</td>
-                    <td className="whitespace-nowrap tabular text-zinc-600">{fmtDate(v.valid_until)}</td>
-                    <td className="text-right"><ValidityPill {...validity(v.valid_until, today)} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="table">
+              <thead><tr><th>Vehicle</th><th className="hidden sm:table-cell">Model</th><th className="hidden md:table-cell">Outlet</th><th>Valid till</th><th /></tr></thead>
+              <tbody>
+                {expiring.map((v) => {
+                  const o = (Array.isArray(v.outlets) ? v.outlets[0] : v.outlets) as { name: string } | null;
+                  return (
+                    <tr key={v.vehicle_no}>
+                      <td className="whitespace-nowrap font-mono text-[13px] font-medium">{fmtPlate(v.vehicle_no)}</td>
+                      <td className="hidden text-zinc-600 sm:table-cell">{v.model ?? "—"}</td>
+                      <td className="hidden text-zinc-600 md:table-cell">{o?.name ?? "—"}</td>
+                      <td className="whitespace-nowrap tabular text-zinc-600">{fmtDate(v.valid_until)}</td>
+                      <td className="text-right"><ValidityPill {...validity(v.valid_until, today)} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </Card>
     </>

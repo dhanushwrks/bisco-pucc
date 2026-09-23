@@ -25,7 +25,7 @@ export default async function OutletDetail({ params }: { params: Promise<{ id: s
       <PageHeader title={o.name} subtitle={`Licence ${o.licence_no}${o.etc_id ? ` · ETC ${o.etc_id}` : ""}`}
         actions={<>
           <EditOutletModal outlet={o} />
-          <Link href={`/upload?outlet=${o.id}`} className="btn-primary">Upload for this outlet</Link>
+          <Link href={`/upload?outlet=${o.id}`} className="btn-primary w-full sm:w-auto">Upload for this outlet</Link>
         </>} />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -34,17 +34,30 @@ export default async function OutletDetail({ params }: { params: Promise<{ id: s
             {!uploads?.length ? <Empty title="No uploads yet" /> : (
               <div className="overflow-x-auto">
                 <table className="table">
-                  <thead><tr><th>Period</th><th className="text-right">Rows</th><th className="text-right">New</th><th className="text-right">Renewed</th><th className="text-right">Dupes</th><th className="text-right">Rejected</th><th>Uploaded</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Period</th>
+                      <th className="text-right">Rows</th>
+                      <th className="text-right">New</th>
+                      <th className="hidden text-right sm:table-cell">Renewed</th>
+                      <th className="hidden text-right md:table-cell">Dupes</th>
+                      <th className="hidden text-right md:table-cell">Rejected</th>
+                      <th className="hidden lg:table-cell">Uploaded</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     {uploads.map((u) => (
                       <tr key={u.id}>
-                        <td className="tabular whitespace-nowrap">{u.period_from === u.period_to ? fmtDate(u.period_from) : `${fmtDate(u.period_from)} – ${fmtDate(u.period_to)}`}</td>
+                        <td className="tabular whitespace-nowrap">
+                          {u.period_from === u.period_to ? fmtDate(u.period_from) : `${fmtDate(u.period_from)} – ${fmtDate(u.period_to)}`}
+                          <div className="mt-0.5 text-[11px] text-zinc-400 lg:hidden">{fmtDateTime(u.created_at)}</div>
+                        </td>
                         <td className="text-right tabular">{u.total_rows}</td>
                         <td className="text-right tabular text-brand-700">{u.new_vehicles}</td>
-                        <td className="text-right tabular">{u.renewed}</td>
-                        <td className="text-right tabular text-zinc-400">{u.already_imported}</td>
-                        <td className="text-right tabular">{u.rejected ? <span className="text-rose-600">{u.rejected}</span> : 0}</td>
-                        <td className="whitespace-nowrap text-xs text-zinc-500">{fmtDateTime(u.created_at)}</td>
+                        <td className="hidden text-right tabular sm:table-cell">{u.renewed}</td>
+                        <td className="hidden text-right tabular text-zinc-400 md:table-cell">{u.already_imported}</td>
+                        <td className="hidden text-right tabular md:table-cell">{u.rejected ? <span className="text-rose-600">{u.rejected}</span> : 0}</td>
+                        <td className="hidden whitespace-nowrap text-xs text-zinc-500 lg:table-cell">{fmtDateTime(u.created_at)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -57,12 +70,12 @@ export default async function OutletDetail({ params }: { params: Promise<{ id: s
             {ops?.length ? (
               <ul className="mb-5 divide-y divide-zinc-100 rounded-lg border border-zinc-100">
                 {ops.map((u) => (
-                  <li key={u.id} className="flex items-center justify-between px-4 py-2.5">
-                    <div>
-                      <div className="text-sm">{u.full_name || u.email}</div>
-                      <div className="text-xs text-zinc-500">{u.email}</div>
+                  <li key={u.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-2.5">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm">{u.full_name || u.email}</div>
+                      <div className="truncate text-xs text-zinc-500">{u.email}</div>
                     </div>
-                    <ActionButton className="btn-ghost btn-sm text-rose-600" confirm={`Remove ${u.email}? They will lose access.`}
+                    <ActionButton className="btn-ghost btn-sm self-start text-rose-600 sm:self-auto" confirm={`Remove ${u.email}? They will lose access.`}
                       action={removeOperator.bind(null, o.id, u.id)}>Remove</ActionButton>
                   </li>
                 ))}

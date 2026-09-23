@@ -56,24 +56,24 @@ export default async function Vehicles({ searchParams }: { searchParams: Promise
     <>
       <PageHeader title="Vehicles" subtitle={`${count ?? 0} vehicles · one record per vehicle number, latest certificate wins`} />
 
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <form className="relative w-full sm:w-72" action="/vehicles">
+      <div className="mb-4 space-y-3">
+        <form className="relative w-full sm:max-w-sm" action="/vehicles">
           <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input name="q" defaultValue={term} className="input pl-9" placeholder="Search vehicle no. or mobile" />
           {status !== "all" && <input type="hidden" name="status" value={status} />}
           {sp.outlet && <input type="hidden" name="outlet" value={sp.outlet} />}
         </form>
-        <div className="flex flex-wrap gap-1 rounded-lg bg-zinc-100 p-1">
+        <div className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-0.5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:rounded-lg sm:bg-zinc-100 sm:p-1">
           {FILTERS.map(([k, l]) => (
             <Link key={k} href={href({ status: k, page: "1" })}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${status === k ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800"}`}>{l}</Link>
+              className={`shrink-0 rounded-lg px-3 py-2.5 text-xs font-medium transition sm:rounded-md sm:py-1.5 ${status === k ? "bg-zinc-900 text-white sm:bg-white sm:text-zinc-900 sm:shadow-sm" : "bg-zinc-100 text-zinc-600 sm:bg-transparent sm:text-zinc-500 hover:text-zinc-800"}`}>{l}</Link>
           ))}
         </div>
         {me.role === "owner" && (outlets?.length ?? 0) > 1 && (
-          <div className="flex flex-wrap gap-1">
-            <Link href={href({ outlet: undefined, page: "1" })} className={`rounded-md px-2.5 py-1 text-xs ${!sp.outlet ? "bg-zinc-900 text-white" : "text-zinc-500 hover:bg-zinc-100"}`}>All outlets</Link>
+          <div className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-0.5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+            <Link href={href({ outlet: undefined, page: "1" })} className={`shrink-0 rounded-lg px-3 py-2.5 text-xs ${!sp.outlet ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}>All outlets</Link>
             {outlets!.map((o) => (
-              <Link key={o.id} href={href({ outlet: o.id, page: "1" })} className={`rounded-md px-2.5 py-1 text-xs ${sp.outlet === o.id ? "bg-zinc-900 text-white" : "text-zinc-500 hover:bg-zinc-100"}`}>{o.name}</Link>
+              <Link key={o.id} href={href({ outlet: o.id, page: "1" })} className={`shrink-0 rounded-lg px-3 py-2.5 text-xs ${sp.outlet === o.id ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}>{o.name}</Link>
             ))}
           </div>
         )}
@@ -88,7 +88,7 @@ export default async function Vehicles({ searchParams }: { searchParams: Promise
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
-                <tr><th>Vehicle</th><th>Mobile</th><th className="hidden lg:table-cell">Model</th><th className="hidden md:table-cell">Outlet</th><th>Valid till</th><th>Status</th>{me.role === "owner" && <th />}</tr>
+                <tr><th>Vehicle</th><th className="hidden sm:table-cell">Mobile</th><th className="hidden lg:table-cell">Model</th><th className="hidden md:table-cell">Outlet</th><th>Valid till</th><th className="hidden md:table-cell">Status</th>{me.role === "owner" && <th />}</tr>
               </thead>
               <tbody>
                 {rows.map((v) => {
@@ -97,13 +97,17 @@ export default async function Vehicles({ searchParams }: { searchParams: Promise
                     <tr key={v.vehicle_no} className={v.opted_out ? "opacity-60" : ""}>
                       <td className="whitespace-nowrap">
                         <div className="font-mono text-[13px] font-medium">{fmtPlate(v.vehicle_no)}</div>
-                        <div className="text-[11px] text-zinc-400">{v.fuel ?? ""}</div>
+                        <div className="text-[11px] text-zinc-400">{v.fuel ?? ""}{v.opted_out ? " · opted out" : ""}</div>
+                        <div className="mt-0.5 text-[11px] tabular text-zinc-500 sm:hidden">{v.mobile ? fmtMobile(v.mobile) : "No mobile"}</div>
                       </td>
-                      <td className="whitespace-nowrap tabular text-zinc-600">{v.mobile ? fmtMobile(v.mobile) : <Pill>No mobile</Pill>}</td>
+                      <td className="hidden whitespace-nowrap tabular text-zinc-600 sm:table-cell">{v.mobile ? fmtMobile(v.mobile) : <Pill>No mobile</Pill>}</td>
                       <td className="hidden max-w-52 truncate text-zinc-600 lg:table-cell">{v.model ?? "—"}</td>
                       <td className="hidden max-w-44 truncate text-zinc-600 md:table-cell" title={o?.name}>{o?.name ?? "—"}</td>
-                      <td className="whitespace-nowrap tabular text-zinc-600">{fmtDate(v.valid_until)}</td>
-                      <td className="whitespace-nowrap">
+                      <td className="whitespace-nowrap tabular text-zinc-600">
+                        <div>{fmtDate(v.valid_until)}</div>
+                        <div className="mt-1 md:hidden"><ValidityPill {...validity(v.valid_until, today)} /></div>
+                      </td>
+                      <td className="hidden whitespace-nowrap md:table-cell">
                         <div className="flex items-center gap-1.5">
                           <ValidityPill {...validity(v.valid_until, today)} />
                           {v.opted_out && <Pill>Opted out</Pill>}

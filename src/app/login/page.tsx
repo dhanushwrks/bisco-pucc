@@ -34,7 +34,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-zinc-50 px-4">
+    <main className="grid min-h-dvh place-items-center bg-zinc-50 px-4 py-8">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo size={40} />

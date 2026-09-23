@@ -86,9 +86,9 @@ export default async function Settings() {
 
             <Card title="Automatic reminders">
               <ActionForm action={saveReminderSettings} className="space-y-3">
-                <label className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-2.5">
+                <label className="flex min-h-12 items-center justify-between gap-3 rounded-lg border border-zinc-200 px-3 py-3">
                   <span className="text-sm">Send automatic reminders</span>
-                  <input type="checkbox" name="enabled" defaultChecked={org?.reminders_enabled} className="h-4 w-4 accent-emerald-600" />
+                  <input type="checkbox" name="enabled" defaultChecked={org?.reminders_enabled} className="h-5 w-5 accent-emerald-600" />
                 </label>
                 <div>
                   <label className="label">Remind on (days before expiry)</label>
@@ -100,8 +100,8 @@ export default async function Settings() {
                     </p>
                   )}
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="sm:col-span-2">
                     <label className="label">WhatsApp template name</label>
                     <input name="template" className="input" defaultValue={org?.wa_template} />
                   </div>

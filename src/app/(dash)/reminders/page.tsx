@@ -55,15 +55,28 @@ export default async function Reminders() {
         <Card pad={false} title={`Due on next run · ${dueRows.length}`}
           action={<span className="text-xs text-zinc-400">Daily 10:30 AM IST</span>}>
           {!dueRows.length ? <Empty title="No reminders due" hint="Customers already reminded at their current stage are skipped automatically." /> : (
-            <div className="max-h-80 overflow-auto">
+            <div className="max-h-80 overflow-auto overflow-x-auto">
               <table className="table">
-                <thead><tr><th>Vehicle</th><th>Mobile</th><th>Expires</th><th>Stage</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>Vehicle</th>
+                    <th className="hidden sm:table-cell">Mobile</th>
+                    <th>Expires</th>
+                    <th>Stage</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {dueRows.map((r) => (
                     <tr key={r.vehicle_no}>
-                      <td className="font-mono text-[13px] font-medium">{fmtPlate(r.vehicle_no)}</td>
-                      <td className="tabular text-zinc-600">{fmtMobile(r.mobile)}</td>
-                      <td className="tabular text-zinc-600">{fmtDate(r.valid_until)} <span className="text-xs text-zinc-400">({r.days_left < 0 ? `${-r.days_left}d ago` : `${r.days_left}d`})</span></td>
+                      <td className="font-mono text-[13px] font-medium">
+                        {fmtPlate(r.vehicle_no)}
+                        <div className="mt-0.5 font-sans text-[11px] tabular font-normal text-zinc-500 sm:hidden">{fmtMobile(r.mobile)}</div>
+                      </td>
+                      <td className="hidden tabular text-zinc-600 sm:table-cell">{fmtMobile(r.mobile)}</td>
+                      <td className="tabular text-zinc-600">
+                        {fmtDate(r.valid_until)}
+                        <span className="ml-1 text-xs text-zinc-400">({r.days_left < 0 ? `${-r.days_left}d ago` : `${r.days_left}d`})</span>
+                      </td>
                       <td><Pill tone="amber">{stageLabel(r.stage)}</Pill></td>
                     </tr>
                   ))}
@@ -77,14 +90,22 @@ export default async function Reminders() {
           {!log?.length ? <Empty title="No reminders sent yet" /> : (
             <div className="overflow-x-auto">
               <table className="table">
-                <thead><tr><th>When</th><th>Vehicle</th><th>Mobile</th><th>Stage</th><th>Status</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>When</th>
+                    <th>Vehicle</th>
+                    <th className="hidden sm:table-cell">Mobile</th>
+                    <th className="hidden md:table-cell">Stage</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {log.map((r) => (
                     <tr key={r.id}>
                       <td className="whitespace-nowrap text-xs text-zinc-500">{fmtDateTime(r.created_at)}</td>
                       <td className="font-mono text-[13px]">{fmtPlate(r.vehicle_no)}</td>
-                      <td className="tabular text-zinc-600">{fmtMobile(r.mobile)}</td>
-                      <td className="text-zinc-600">{stageLabel(r.stage)}</td>
+                      <td className="hidden tabular text-zinc-600 sm:table-cell">{fmtMobile(r.mobile)}</td>
+                      <td className="hidden text-zinc-600 md:table-cell">{stageLabel(r.stage)}</td>
                       <td title={r.error ?? ""}><Pill tone={STATUS[r.status] ?? "zinc"}>{r.status}</Pill></td>
                     </tr>
                   ))}

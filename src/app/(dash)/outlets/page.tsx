@@ -35,7 +35,7 @@ export default async function Outlets({ searchParams }: { searchParams: Promise<
                 const l = last.get(o.id);
                 return (
                   <li key={o.id}>
-                    <Link href={`/outlets/${o.id}`} className="flex items-center gap-4 px-5 py-4 transition hover:bg-zinc-50">
+                    <Link href={`/outlets/${o.id}`} className="flex items-center gap-3 px-4 py-4 transition hover:bg-zinc-50 sm:gap-4 sm:px-5">
                       <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-zinc-100 text-sm font-semibold text-zinc-600">
                         {o.name.slice(0, 1).toUpperCase()}
                       </div>
@@ -45,7 +45,8 @@ export default async function Outlets({ searchParams }: { searchParams: Promise<
                           {!o.is_active && <Pill>Inactive</Pill>}
                         </div>
                         <div className="mt-0.5 text-xs text-zinc-500">
-                          Lic. {o.licence_no}{o.etc_id ? ` · ETC ${o.etc_id}` : ""} · {counts.get(o.id) ?? 0} vehicles
+                          <span className="sm:hidden">{counts.get(o.id) ?? 0} vehicles · {l ? `till ${fmtDate(l.period_to)}` : "Never uploaded"}</span>
+                          <span className="hidden sm:inline">Lic. {o.licence_no}{o.etc_id ? ` · ETC ${o.etc_id}` : ""} · {counts.get(o.id) ?? 0} vehicles</span>
                         </div>
                       </div>
                       <div className="hidden text-right sm:block">

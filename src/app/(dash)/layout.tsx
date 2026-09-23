@@ -13,10 +13,10 @@ async function signOut() {
 export default async function DashLayout({ children }: { children: React.ReactNode }) {
   const s = await getSession();
   return (
-    <div className="min-h-screen">
+    <div className="min-h-dvh">
       <Sidebar orgName={s.orgName} email={s.email} role={s.role} outletName={s.outletName} signOut={signOut} />
-      <main className="md:pl-60">
-        <div className="mx-auto max-w-6xl px-4 py-6 md:px-10 md:py-10">{children}</div>
+      <main className="pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-60">
+        <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 md:px-10 md:py-10">{children}</div>
       </main>
     </div>
   );

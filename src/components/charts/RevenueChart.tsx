@@ -19,12 +19,12 @@ export function RevenueChart({ data = DEMO_REVENUE }: { data?: MonthPoint[] }) {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
         <div>
           <div className="text-2xl font-semibold tracking-tight tabular text-zinc-900">{formatInr(total)}</div>
           <div className="mt-0.5 text-xs text-zinc-500">Demo · last 6 months</div>
         </div>
-        <div className="text-right text-xs text-zinc-500">
+        <div className="text-xs text-zinc-500 sm:text-right">
           <div className="font-medium tabular text-zinc-800">{formatInr(latest.revenue)} this month</div>
           <div className={delta >= 0 ? "text-brand-700" : "text-rose-600"}>
             {delta >= 0 ? "+" : ""}{delta.toFixed(1)}% vs prior month
