@@ -188,7 +188,7 @@ export function UploadForm({ outlets, fixed, initialOutlet }: { outlets: Outlet[
                   {busy === "import" ? "Importing…" : s.valid_rows - s.already_imported === 0 ? "Nothing new to import" : `Import ${s.valid_rows - s.already_imported} certificates`}
                 </button>
               )}
-              <p className="mt-2 text-center text-xs text-zinc-500">Vehicle numbers are de-duplicated automatically.</p>
+              <p className="mt-2 text-center text-xs text-zinc-500">Duplicate PUCC numbers and same vehicle + test date are skipped automatically.</p>
             </div>
           </div>
         )}

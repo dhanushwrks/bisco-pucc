@@ -4,7 +4,6 @@ const TONES: Record<string, string> = {
   petrol: "bg-amber-500",
   diesel: "bg-zinc-700",
   cng: "bg-sky-500",
-  ev: "bg-brand-500",
 };
 
 export function FuelBreakdown({ data = DEMO_FUELS }: { data?: CategoryCount[] }) {

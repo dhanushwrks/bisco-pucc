@@ -34,7 +34,6 @@ export const DEMO_FUELS: CategoryCount[] = [
   { key: "petrol", label: "Petrol", count: 9_420, avgFee: 90 },
   { key: "diesel", label: "Diesel", count: 1_860, avgFee: 180 },
   { key: "cng", label: "CNG / LPG", count: 310, avgFee: 120 },
-  { key: "ev", label: "Electric", count: 90, avgFee: 80 },
 ];
 
 export function formatInr(n: number): string {
